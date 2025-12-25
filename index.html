@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raffle Control | Управление розыгрышами</title>
+
+  <!-- Подключаем CSS -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/tabs.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <!-- Заголовок -->
+    <header class="app-header">
+      <h1 class="app-title">RAFFLE CONTROL</h1>
+      <p class="app-subtitle">PREMIUM STREAM GIVEAWAY MANAGER</p>
+    </header>
+
+    <!-- Вкладки навигации -->
+    <div class="tabs-container">
+      <nav class="tabs-nav">
+        <button class="tab-button active" data-tab="create">
+          <i class="fas fa-plus-circle"></i>
+          Создать розыгрыш
+        </button>
+        <button class="tab-button" data-tab="find">
+          <i class="fas fa-search"></i>
+          Найти розыгрыш
+        </button>
+        <button class="tab-button" data-tab="active">
+          <i class="fas fa-fire"></i>
+          Активные розыгрыши
+        </button>
+        <button class="tab-button" data-tab="profile">
+          <i class="fas fa-user"></i>
+          Личный кабинет
+        </button>
+      </nav>
+
+      <!-- Контент вкладок -->
+      <div class="tabs-content">
+        <!-- Вкладка 1: Создать розыгрыш -->
+        <div id="tab-create" class="tab-content active">
+          <!-- Форма создания розыгрыша -->
+        </div>
+
+        <!-- Вкладка 2: Найти розыгрыш -->
+        <div id="tab-find" class="tab-content">
+          <!-- Поиск розыгрыша -->
+        </div>
+
+        <!-- Вкладка 3: Активные розыгрыши -->
+        <div id="tab-active" class="tab-content">
+          <!-- Активные розыгрыши -->
+        </div>
+
+        <!-- Вкладка 4: Личный кабинет -->
+        <div id="tab-profile" class="tab-content">
+          <!-- Личный кабинет -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Подключаем JavaScript -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/tabs.js"></script>
+  <script src="js/raffle.js"></script>
+  <script src="js/socket.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

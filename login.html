@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Raffle Control</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .auth-container {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(50px);
+      border-radius: 30px;
+      border: 1px solid var(--border-glass);
+      padding: 50px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow:
+        0 40px 80px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .auth-tab.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+    }
+
+    .auth-form h2 {
+      color: var(--text-primary);
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 1.8rem;
+    }
+
+    /* Контейнер для поля ввода с кнопкой */
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 18px 50px 18px 18px;
+      /* Добавляем отступ справа для кнопки */
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 15px;
+      color: var(--text-primary);
+      font-size: 16px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      margin-bottom: 16px;
+    }
+
+    .auth-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow:
+        0 0 0 4px rgba(138, 43, 226, 0.1),
+        inset 0 0 20px rgba(138, 43, 226, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .auth-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    /* Кнопка показа/скрытия пароля */
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 40%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 5px;
+      transition: color 0.3s ease;
+      z-index: 10;
+    }
+
+    .password-toggle:hover {
+      color: var(--accent-primary);
+    }
+
+    .password-toggle i {
+      font-size: 18px;
+    }
+
+    .auth-button {
+      width: 100%;
+      padding: 18px;
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(138, 43, 226, 0.4);
+    }
+
+    .auth-button.loading {
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .auth-button.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .auth-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .auth-error.active {
+      display: block;
+    }
+
+    .auth-success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .auth-success.active {
+      display: block;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 30px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .auth-link {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--text-secondary);
+    }
+
+    .auth-link a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .auth-link a:hover {
+      color: var(--accent-primary);
+      text-decoration: underline;
+    }
+
+    /* Дополнительные стили для валидации */
+    .password-strength {
+      margin-top: 5px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .password-strength.weak {
+      color: #ef4444;
+    }
+
+    .password-strength.medium {
+      color: #f59e0b;
+    }
+
+    .password-strength.strong {
+      color: #10b981;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-tab="login">Вход</div>
+        <div class="auth-tab" data-tab="register">Регистрация</div>
+      </div>
+
+      <!-- Форма входа -->
+      <div class="auth-form active" id="loginForm">
+        <h2>Вход в систему</h2>
+        <div class="auth-error" id="loginError"></div>
+
+        <input type="text" id="loginEmail" class="auth-input" placeholder="Email или имя пользователя">
+
+        <div class="input-group">
+          <input type="password" id="loginPassword" class="auth-input" placeholder="Пароль">
+          <button type="button" class="password-toggle" id="toggleLoginPassword">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+
+        <button class="auth-button" id="loginButton">Войти</button>
+        <div class="auth-link">
+          Нет аккаунта? <a href="#" onclick="switchToTab('register')">Зарегистрироваться</a>
+        </div>
+      </div>
+
+      <!-- Форма регистрации -->
+      <div class="auth-form" id="registerForm">
+        <h2>Регистрация</h2>
+        <div class="auth-error" id="registerError"></div>
+        <div class="auth-success" id="registerSuccess"></div>
+
+        <input type="email" id="registerEmail" class="auth-input" placeholder="Email">
+        <input type="text" id="registerUsername" class="auth-input" placeholder="Имя пользователя">
+
+        <div class="input-group">
+          <input type="password" id="registerPassword" class="auth-input" placeholder="Пароль">
+          <button type="button" class="password-toggle" id="toggleRegisterPassword">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="password-strength" id="passwordStrength"></div>
+
+        <div class="input-group">
+          <input type="password" id="registerConfirmPassword" class="auth-input" placeholder="Подтверждение пароля">
+          <button type="button" class="password-toggle" id="toggleConfirmPassword">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+
+        <button class="auth-button" id="registerButton">Зарегистрироваться</button>
+        <div class="auth-link">
+          Уже есть аккаунт? <a href="#" onclick="switchToTab('login')">Войти</a>
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        © 2024 Raffle Control
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== ФУНКЦИИ ДЛЯ ПОКАЗА/СКРЫТИЯ ПАРОЛЯ =====
+
+    function togglePasswordVisibility(inputId, toggleButton) {
+      const input = document.getElementById(inputId);
+      const icon = toggleButton.querySelector('i');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+        toggleButton.setAttribute('aria-label', 'Скрыть пароль');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+        toggleButton.setAttribute('aria-label', 'Показать пароль');
+      }
+    }
+
+    // Инициализация кнопок показа пароля
+    function initPasswordToggles() {
+      // Для формы входа
+      const toggleLoginBtn = document.getElementById('toggleLoginPassword');
+      toggleLoginBtn.addEventListener('click', () => {
+        togglePasswordVisibility('loginPassword', toggleLoginBtn);
+      });
+
+      // Для формы регистрации (пароль)
+      const toggleRegisterBtn = document.getElementById('toggleRegisterPassword');
+      toggleRegisterBtn.addEventListener('click', () => {
+        togglePasswordVisibility('registerPassword', toggleRegisterBtn);
+      });
+
+      // Для формы регистрации (подтверждение пароля)
+      const toggleConfirmBtn = document.getElementById('toggleConfirmPassword');
+      toggleConfirmBtn.addEventListener('click', () => {
+        togglePasswordVisibility('registerConfirmPassword', toggleConfirmBtn);
+      });
+
+      // Добавляем возможность переключения по Alt+E
+      document.addEventListener('keydown', (e) => {
+        if (e.altKey && e.key === 'e') {
+          const activeForm = document.querySelector('.auth-form.active');
+          if (activeForm.id === 'loginForm') {
+            togglePasswordVisibility('loginPassword', toggleLoginBtn);
+          } else {
+            const focusedElement = document.activeElement;
+            if (focusedElement && focusedElement.type === 'password') {
+              if (focusedElement.id === 'registerPassword') {
+                togglePasswordVisibility('registerPassword', toggleRegisterBtn);
+              } else if (focusedElement.id === 'registerConfirmPassword') {
+                togglePasswordVisibility('registerConfirmPassword', toggleConfirmBtn);
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ===== ФУНКЦИЯ ПРОВЕРКИ СЛОЖНОСТИ ПАРОЛЯ =====
+
+    function checkPasswordStrength(password) {
+      const strengthElement = document.getElementById('passwordStrength');
+      if (!strengthElement) return;
+
+      if (!password) {
+        strengthElement.textContent = '';
+        strengthElement.className = 'password-strength';
+        return;
+      }
+
+      let strength = 0;
+      let message = '';
+      let className = '';
+
+      // Проверки сложности
+      if (password.length >= 8) strength++;
+      if (/[A-Z]/.test(password)) strength++;
+      if (/[0-9]/.test(password)) strength++;
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+      switch (strength) {
+        case 0:
+        case 1:
+          message = 'Слабый пароль';
+          className = 'weak';
+          break;
+        case 2:
+        case 3:
+          message = 'Средний пароль';
+          className = 'medium';
+          break;
+        case 4:
+          message = 'Надёжный пароль';
+          className = 'strong';
+          break;
+      }
+
+      strengthElement.textContent = message;
+      strengthElement.className = `password-strength ${className}`;
+    }
+
+    // ===== УПРАВЛЕНИЕ ВКЛАДКАМИ =====
+
+    function switchToTab(tabName) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+
+      document.querySelector(`.auth-tab[data-tab="${tabName}"]`).classList.add('active');
+      document.getElementById(`${tabName}Form`).classList.add('active');
+
+      clearErrors();
+
+      // Сбрасываем показ паролей при переключении вкладок
+      resetPasswordVisibility();
+    }
+
+    function resetPasswordVisibility() {
+      // Сбрасываем все пароли в скрытое состояние
+      document.querySelectorAll('input[type="password"], input[type="text"]').forEach(input => {
+        if (input.id.includes('Password')) {
+          input.type = 'password';
+        }
+      });
+
+      // Сбрасываем иконки
+      document.querySelectorAll('.password-toggle i').forEach(icon => {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      });
+    }
+
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        switchToTab(tab.dataset.tab);
+      });
+    });
+
+    function clearErrors() {
+      document.querySelectorAll('.auth-error').forEach(el => {
+        el.classList.remove('active');
+        el.textContent = '';
+      });
+      document.querySelectorAll('.auth-success').forEach(el => {
+        el.classList.remove('active');
+        el.textContent = '';
+      });
+    }
+
+    function showError(form, message) {
+      const errorEl = document.getElementById(`${form}Error`);
+      errorEl.textContent = message;
+      errorEl.classList.add('active');
+    }
+
+    function showSuccess(form, message) {
+      const successEl = document.getElementById(`${form}Success`);
+      successEl.textContent = message;
+      successEl.classList.add('active');
+    }
+
+    function setButtonLoading(button, isLoading) {
+      if (isLoading) {
+        button.classList.add('loading');
+        button.disabled = true;
+        button.innerHTML = '';
+      } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+        button.innerHTML = button === loginButton ? 'Войти' : 'Зарегистрироваться';
+      }
+    }
+
+    // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
+
+    // Вход
+    const loginButton = document.getElementById('loginButton');
+    loginButton.addEventListener('click', async () => {
+      const emailOrUsername = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      if (!emailOrUsername || !password) {
+        showError('login', 'Заполните все поля');
+        return;
+      }
+
+      try {
+        setButtonLoading(loginButton, true);
+
+        const response = await fetch('http://localhost:3000/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ emailOrUsername, password }),
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('justLoggedIn', 'true');
+
+          // ⭐ ВАЖНО: Сохраняем токен из ответа
+          if (data.token) {
+            localStorage.setItem('accessToken', data.token);
+            console.log('Токен сохранен:', data.token.substring(0, 20) + '...');
+          } else {
+            // Если сервер не возвращает token в JSON, пробуем получить из cookies
+            console.log('Токен не найден в ответе, проверяем cookies...');
+            setTimeout(() => {
+              const cookies = document.cookie.split(';');
+              const accessTokenCookie = cookies.find(c => c.trim().startsWith('accessToken='));
+              if (accessTokenCookie) {
+                const token = accessTokenCookie.split('=')[1];
+                localStorage.setItem('accessToken', token);
+                console.log('Токен из cookies сохранен');
+              }
+            }, 100);
+          }
+
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 500);
+        }
+        else {
+          showError('login', data.error || 'Ошибка при входе');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showError('login', 'Ошибка сети. Проверьте подключение к серверу.');
+      } finally {
+        setButtonLoading(loginButton, false);
+      }
+    });
+
+    // Регистрация
+    const registerButton = document.getElementById('registerButton');
+    registerButton.addEventListener('click', async () => {
+      const email = document.getElementById('registerEmail').value.trim();
+      const username = document.getElementById('registerUsername').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+
+      // Валидация
+      if (!email || !username || !password || !confirmPassword) {
+        showError('register', 'Заполните все поля');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('register', 'Пароли не совпадают');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('register', 'Пароль должен содержать минимум 6 символов');
+        return;
+      }
+
+      if (username.length < 3) {
+        showError('register', 'Имя пользователя должно содержать минимум 3 символа');
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showError('register', 'Введите корректный email');
+        return;
+      }
+
+      try {
+        setButtonLoading(registerButton, true);
+
+        const response = await fetch('http://localhost:3000/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, username, password }),
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+          showSuccess('register', 'Регистрация успешна! Вы будете перенаправлены...');
+
+          setTimeout(async () => {
+            try {
+              const loginResponse = await fetch('http://localhost:3000/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emailOrUsername: email, password }),
+                credentials: 'include'
+              });
+
+              const loginData = await loginResponse.json();
+
+              if (loginData.ok) {
+                localStorage.setItem('user', JSON.stringify(loginData.user));
+                window.location.href = 'index.html';
+              } else {
+                switchToTab('login');
+                showError('login', 'Регистрация успешна. Теперь войдите в систему.');
+              }
+            } catch (loginError) {
+              switchToTab('login');
+              showError('login', 'Регистрация успешна. Теперь войдите в систему.');
+            }
+          }, 2000);
+
+        } else {
+          showError('register', data.error || 'Ошибка при регистрации');
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        showError('register', 'Ошибка сети. Проверьте подключение к серверу.');
+      } finally {
+        setButtonLoading(registerButton, false);
+      }
+    });
+
+    // Проверка сложности пароля при вводе
+    document.getElementById('registerPassword')?.addEventListener('input', (e) => {
+      checkPasswordStrength(e.target.value);
+    });
+
+    // Поддержка Enter в формах
+    document.querySelectorAll('.auth-input').forEach(input => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const activeForm = document.querySelector('.auth-form.active');
+          if (activeForm.id === 'loginForm') {
+            loginButton.click();
+          } else {
+            registerButton.click();
+          }
+        }
+      });
+    });
+
+    // ===== ИНИЦИАЛИЗАЦИЯ =====
+
+    // async function checkAuth() {
+    //   try {
+    //     const response = await fetch('http://localhost:3000/auth/me', {
+    //       method: 'GET',
+    //       credentials: 'include'
+    //     });
+
+    //     if (response.ok) {
+    //       window.location.href = 'index.html';
+    //     }
+    //   } catch (error) {
+    //     // Ошибка при проверке, остаемся на странице входа
+    //   }
+    // }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Инициализируем кнопки показа пароля
+      initPasswordToggles();
+
+      // Проверяем авторизацию
+      // checkAuth();
+
+      // Фокус на первое поле ввода
+      const firstInput = document.querySelector('.auth-form.active .auth-input');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    });
+  </script>
+</body>
+
+</html>
